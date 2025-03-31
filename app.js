@@ -6,6 +6,9 @@ mobiscroll.setOptions({
 $(function () {
   var zoomLevel = 9;
 
+  // Load saved events from localStorage (or an API) when the page loads
+  var savedEvents = JSON.parse(localStorage.getItem('myEvents')) || [];
+
   var myCalendar = $('#eventcalendar')
     .mobiscroll()
     .eventcalendar({
@@ -16,6 +19,41 @@ $(function () {
       eventDelete: true,
       refDate: getRefDate(new Date()),
       zoomLevel: zoomLevel,
+      // Callback when a new event is created
+      onEventCreated: function (args) {
+        // Create a simplified event object
+        var newEvent = {
+          id: args.event.id,
+          start: args.event.start,
+          end: args.event.end,
+          title: args.event.title,
+          resource: args.event.resource,
+          // description: args.event.description,
+          // allDay: args.event.allDay,
+          // color: args.event.color
+        };
+
+        // Add the event to your storage (localStorage example)
+        var savedEvents = JSON.parse(localStorage.getItem('myEvents')) || [];
+        savedEvents.push(newEvent);
+        localStorage.setItem('myEvents', JSON.stringify(savedEvents));
+      },
+      // Callback when an event is updated
+      onEventUpdated: function (event, inst) {
+        // Update the event in your savedEvents array (by matching an ID or timestamp)
+        savedEvents = savedEvents.map(function (e) {
+          return e.id === event.id ? event : e;
+        });
+        localStorage.setItem('myEvents', JSON.stringify(savedEvents));
+      },
+      // Callback when an event is deleted
+      onEventDeleted: function (event, inst) {
+        savedEvents = savedEvents.filter(function (e) {
+          return e.id !== event.id;
+        });
+        localStorage.setItem('myEvents', JSON.stringify(savedEvents));
+      },
+    
       view: {
         //configuring the timeline view
         timeline: {
@@ -66,68 +104,69 @@ $(function () {
           '</div>'
         );
       },
-      data: [
-        {
-          start: '2025-03-02T00:00',
-          end: '2025-03-05T00:00',
-          title: 'Event 1',
-          resource: 1,
-        },
-        {
-          start: '2025-03-10T09:00',
-          end: '2025-03-15T15:00',
-          title: 'Event 2',
-          resource: 3,
-        },
-        {
-          start: '2025-03-12T00:00',
-          end: '2025-03-14T00:00',
-          title: 'Event 3',
-          resource: 4,
-        },
-        {
-          start: '2025-03-15T07:00',
-          end: '2025-03-20T12:00',
-          title: 'Event 4',
-          resource: 5,
-        },
-        {
-          start: '2025-03-03T00:00',
-          end: '2025-03-10T00:00',
-          title: 'Event 5',
-          resource: 6,
-        },
-        {
-          start: '2025-03-10T08:00',
-          end: '2025-03-11T20:00',
-          title: 'Event 6',
-          resource: 7,
-        },
-        {
-          start: '2025-03-22T00:00',
-          end: '2025-03-28T00:00',
-          title: 'Event 7',
-          resource: 7,
-        },
-        {
-          start: '2025-03-08T00:00',
-          end: '2025-03-13T00:00',
-          title: 'Event 8',
-          resource: 15,
-        },
-        {
-          start: '2025-03-25T00:00',
-          end: '2025-03-27T00:00',
-          title: 'Event 9',
-          resource: 10,
-        },
-        {
-          start: '2025-03-20T00:00',
-          end: '2025-03-23T00:00',
-          title: 'Event 10',
-          resource: 12,
-        },
-      ],
+      data: savedEvents,
+      // data: [
+      //   {
+      //     start: '2025-03-02T00:00',
+      //     end: '2025-03-05T00:00',
+      //     title: 'Event 1',
+      //     resource: 1,
+      //   },
+      //   {
+      //     start: '2025-03-10T09:00',
+      //     end: '2025-03-15T15:00',
+      //     title: 'Event 2',
+      //     resource: 3,
+      //   },
+      //   {
+      //     start: '2025-03-12T00:00',
+      //     end: '2025-03-14T00:00',
+      //     title: 'Event 3',
+      //     resource: 4,
+      //   },
+      //   {
+      //     start: '2025-03-15T07:00',
+      //     end: '2025-03-20T12:00',
+      //     title: 'Event 4',
+      //     resource: 5,
+      //   },
+      //   {
+      //     start: '2025-03-03T00:00',
+      //     end: '2025-03-10T00:00',
+      //     title: 'Event 5',
+      //     resource: 6,
+      //   },
+      //   {
+      //     start: '2025-03-10T08:00',
+      //     end: '2025-03-11T20:00',
+      //     title: 'Event 6',
+      //     resource: 7,
+      //   },
+      //   {
+      //     start: '2025-03-22T00:00',
+      //     end: '2025-03-28T00:00',
+      //     title: 'Event 7',
+      //     resource: 7,
+      //   },
+      //   {
+      //     start: '2025-03-08T00:00',
+      //     end: '2025-03-13T00:00',
+      //     title: 'Event 8',
+      //     resource: 15,
+      //   },
+      //   {
+      //     start: '2025-03-25T00:00',
+      //     end: '2025-03-27T00:00',
+      //     title: 'Event 9',
+      //     resource: 10,
+      //   },
+      //   {
+      //     start: '2025-03-20T00:00',
+      //     end: '2025-03-23T00:00',
+      //     title: 'Event 10',
+      //     resource: 12,
+      //   },
+      // ],
       resources: [
         {
           id: 1,
