@@ -39,17 +39,17 @@ $(function () {
         localStorage.setItem('myEvents', JSON.stringify(savedEvents));
       },
       // Callback when an event is updated
-      onEventUpdated: function (event, inst) {
+      onEventUpdated: function (args) {
         // Update the event in your savedEvents array (by matching an ID or timestamp)
         savedEvents = savedEvents.map(function (e) {
-          return e.id === event.id ? event : e;
+          return e.id === args.event.id ? args : e;
         });
         localStorage.setItem('myEvents', JSON.stringify(savedEvents));
       },
       // Callback when an event is deleted
-      onEventDeleted: function (event, inst) {
+      onEventDeleted: function (args) {
         savedEvents = savedEvents.filter(function (e) {
-          return e.id !== event.id;
+          return e.id !== args.event.id;
         });
         localStorage.setItem('myEvents', JSON.stringify(savedEvents));
       },
